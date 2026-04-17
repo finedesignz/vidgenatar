@@ -5,8 +5,8 @@ RUN npm ci
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
+# Dummy URL so Prisma client doesn't crash during next build (real URL injected at runtime)
+ENV DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
