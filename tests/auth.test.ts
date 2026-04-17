@@ -5,7 +5,7 @@ jest.mock('@/lib/db', () => ({
   db: { client: { findUnique: jest.fn() } },
 }))
 
-const mockDb = db as { client: { findUnique: jest.Mock } }
+const mockDb = db as unknown as { client: { findUnique: jest.Mock } }
 
 beforeEach(() => jest.clearAllMocks())
 

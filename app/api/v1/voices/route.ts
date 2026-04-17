@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   const parsed = z.object({
     elevenlabs_voice_id: z.string(),
     name: z.string(),
-    settings: z.record(z.unknown()).optional(),
+    settings: z.record(z.string(), z.unknown()).optional(),
   }).safeParse(body)
 
   if (!parsed.success) return Response.json({ error: parsed.error.flatten() }, { status: 422 })
@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
 
   const voice = await db.voice.upsert({
     where: { elevenlabsVoiceId: elevenlabs_voice_id },
-    create: { elevenlabsVoiceId: elevenlabs_voice_id, name, settings: settings ?? {} },
-    update: { name, settings: settings ?? {} },
+    create: { elevenlabsVoiceId: elevenlabs_voice_id, name, settings: (settings ?? {}) as object },
+    update: { name, settings: (settings ?? {}) as object },
   })
   return Response.json(voice, { status: 201 })
 }

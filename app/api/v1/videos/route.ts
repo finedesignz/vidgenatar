@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { authenticate, unauthorized } from '@/lib/auth'
 import { createQueue } from '@/lib/queue'
@@ -11,7 +12,7 @@ const CreateVideoSchema = z.object({
   voice_id: z.string().uuid(),
   client_id: z.string().uuid().optional(),
   template_id: z.string().uuid().optional(),
-  template_props: z.record(z.unknown()).optional(),
+  template_props: z.record(z.string(), z.unknown()).optional(),
 })
 
 export async function GET(req: NextRequest) {
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       voiceId: voice_id,
       clientId: effectiveClientId,
       templateId: template_id ?? null,
-      templateProps: template_props ?? null,
+      templateProps: template_props !== undefined ? template_props as Prisma.InputJsonValue : Prisma.DbNull,
       status: 'queued',
     },
   })

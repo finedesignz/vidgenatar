@@ -20,13 +20,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json().catch(() => null)
   const parsed = z.object({
     name: z.string().optional(),
-    brand_defaults: z.record(z.unknown()).optional(),
+    brand_defaults: z.record(z.string(), z.unknown()).optional(),
   }).safeParse(body)
 
   if (!parsed.success) return Response.json({ error: parsed.error.flatten() }, { status: 422 })
   const client = await db.client.update({
     where: { id },
-    data: { name: parsed.data.name, brandDefaults: parsed.data.brand_defaults },
+    data: { name: parsed.data.name, brandDefaults: parsed.data.brand_defaults as object | undefined },
   })
   return Response.json(client)
 }
