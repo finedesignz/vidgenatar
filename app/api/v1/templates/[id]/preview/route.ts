@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import path from 'path'
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'

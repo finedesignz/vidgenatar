@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest } from 'next/server'
 import { authenticate, unauthorized } from '@/lib/auth'
 import { listVoices } from '@/services/elevenlabs'
