@@ -2,14 +2,13 @@ module.exports = {
   apps: [
     {
       name: 'vidgenatar-web',
-      script: 'node_modules/.bin/next',
-      args: 'start -p 9102',
-      env: { NODE_ENV: 'production' },
+      script: 'server.js',
+      env: { NODE_ENV: 'production', PORT: '9102', HOSTNAME: '0.0.0.0' },
     },
     {
       name: 'vidgenatar-worker',
       script: 'node_modules/.bin/tsx',
-      args: 'worker/index.ts',
+      args: '--tsconfig tsconfig.worker.json worker/index.ts',
       env: { NODE_ENV: 'production' },
       restart_delay: 5000,
       max_restarts: 10,
