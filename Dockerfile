@@ -27,6 +27,7 @@ COPY --from=builder /app/worker ./worker
 COPY --from=builder /app/services ./services
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/tsconfig.worker.json ./
 COPY pm2.config.js ./
 RUN npm install -g tsx pm2
 EXPOSE 9102
