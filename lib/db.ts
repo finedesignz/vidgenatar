@@ -4,9 +4,9 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function getClient(): PrismaClient {
   if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      datasourceUrl: process.env.DATABASE_URL ?? 'postgresql://dummy:dummy@localhost:5432/dummy',
-    })
+    // Prisma v7 removed datasourceUrl from PrismaClientOptions.
+    // DATABASE_URL is read directly from the environment at runtime.
+    globalForPrisma.prisma = new PrismaClient()
   }
   return globalForPrisma.prisma
 }
