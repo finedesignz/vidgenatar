@@ -36,8 +36,8 @@ export function NewVideoForm({ avatars, voices, clients, templates }: Props) {
     }
     const clientId = data.get('client_id')
     const templateId = data.get('template_id')
-    if (clientId) body.client_id = clientId
-    if (templateId) body.template_id = templateId
+    if (clientId && clientId !== 'none') body.client_id = clientId
+    if (templateId && templateId !== 'none') body.template_id = templateId
 
     try {
       const res = await fetch('/api/v1/videos', {
@@ -87,7 +87,7 @@ export function NewVideoForm({ avatars, voices, clients, templates }: Props) {
             <Select name="client_id">
               <SelectTrigger><SelectValue placeholder="No client" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="none">None</SelectItem>
                 {clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -97,7 +97,7 @@ export function NewVideoForm({ avatars, voices, clients, templates }: Props) {
             <Select name="template_id">
               <SelectTrigger><SelectValue placeholder="No template" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="none">None</SelectItem>
                 {templates.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
               </SelectContent>
             </Select>
