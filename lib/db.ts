@@ -1,12 +1,16 @@
+import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function getClient(): PrismaClient {
   if (!globalForPrisma.prisma) {
-    // Prisma v7 removed datasourceUrl from PrismaClientOptions.
-    // DATABASE_URL is read directly from the environment at runtime.
-    globalForPrisma.prisma = new PrismaClient()
+    const connectionString = process.env.DATABASE_URL
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set')
+    }
+    const adapter = new PrismaPg({ connectionString })
+    globalForPrisma.prisma = new PrismaClient({ adapter })
   }
   return globalForPrisma.prisma
 }
