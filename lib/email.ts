@@ -1,14 +1,5 @@
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
-
-const ses = new SESClient({
-  region: process.env.AWS_SES_REGION ?? 'us-west-2',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-})
-
-const FROM = process.env.EMAIL_FROM ?? 'noreply@vidgenatar.com'
+const E4A_API = 'https://api.emails4agents.com/v1/messages/send'
+const E4A_INBOX_ID = process.env.E4A_INBOX_ID ?? '08fb192d-a3e3-4717-87d2-2bd2ac212b02' // agent@emails4agents.com
 
 export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Promise<void> {
   const html = `
@@ -19,14 +10,25 @@ export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Prom
       <p style="margin:24px 0 0;color:#999;font-size:13px">If you didn't request this, you can ignore this email.</p>
     </div>
   `
-  const text = `Sign in to Vidgenatar\n\nClick this link to sign in (expires in 15 minutes):\n${magicLinkUrl}\n\nIf you didn't request this, ignore this email.`
+  const text = `Sign in to Vidgenatar\n\nClick this link (expires in 15 minutes):\n${magicLinkUrl}\n\nIf you didn't request this, ignore this email.`
 
-  await ses.send(new SendEmailCommand({
-    Source: FROM,
-    Destination: { ToAddresses: [to] },
-    Message: {
-      Subject: { Data: 'Sign in to Vidgenatar' },
-      Body: { Html: { Data: html }, Text: { Data: text } },
+  const res = await fetch(E4A_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': process.env.E4A_API_KEY!,
     },
-  }))
+    body: JSON.stringify({
+      from_inbox_id: E4A_INBOX_ID,
+      to,
+      subject: 'Sign in to Vidgenatar',
+      html,
+      text,
+    }),
+  })
+
+  if (!res.ok) {
+    const body = await res.text()
+    throw new Error(`emails4agents error ${res.status}: ${body}`)
+  }
 }
