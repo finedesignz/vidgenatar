@@ -10,7 +10,7 @@ export default async function AvatarsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Avatars</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Avatars</h1>
         <SyncButton url="/api/v1/avatars/sync" label="Sync from HeyGen" />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -10,7 +10,7 @@ export default async function VoicesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Voices</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Voices</h1>
         <SyncButton url="/api/v1/voices/sync" label="Sync from ElevenLabs" />
       </div>
       <Table>
