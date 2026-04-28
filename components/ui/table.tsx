@@ -35,10 +35,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn("border-b border-[var(--border)] transition-colors", className)}
-      style={{ cursor: 'default' }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.025)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      className={cn("border-b border-[var(--border)] transition-colors hover:bg-white/[0.025]", className)}
       {...props}
     />
   )
