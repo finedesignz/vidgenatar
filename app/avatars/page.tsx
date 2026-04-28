@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { SyncButton } from '@/components/sync-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,9 +11,7 @@ export default async function AvatarsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Avatars</h1>
-        <form action="/api/v1/avatars/sync" method="POST">
-          <Button variant="outline" type="submit">Sync from HeyGen</Button>
-        </form>
+        <SyncButton url="/api/v1/avatars/sync" label="Sync from HeyGen" />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {avatars.map((a) => (

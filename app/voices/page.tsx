@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+import { SyncButton } from '@/components/sync-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,9 +11,7 @@ export default async function VoicesPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Voices</h1>
-        <Button variant="outline" asChild>
-          <a href="/api/v1/voices/sync" target="_blank">Sync from ElevenLabs</a>
-        </Button>
+        <SyncButton url="/api/v1/voices/sync" label="Sync from ElevenLabs" />
       </div>
       <Table>
         <TableHeader>
