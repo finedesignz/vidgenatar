@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vidgenatar
 
-## Getting Started
+Automated video generation platform. Submit a script, pick an avatar and voice, and Vidgenatar renders a talking-head video via HeyGen — with ElevenLabs TTS baked in.
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router, standalone output)
+- **Prisma 7** + PostgreSQL
+- **BullMQ** + Redis (job queue)
+- **HeyGen API** — avatar video rendering
+- **ElevenLabs API** — voice sync
+- **emails4agents** — magic-link email delivery
+- **Deployed on Coolify** at [app.vidgenatar.com](https://app.vidgenatar.com)
+
+## Auth
+
+Magic-link only. Enter your email on `/login`, click the link, get a 7-day session cookie. No passwords.
+
+## API
+
+All endpoints under `/api/v1/` require `Authorization: Bearer <ADMIN_API_KEY>`.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET/POST | `/api/v1/videos` | List / create videos |
+| GET/PATCH | `/api/v1/videos/:id` | Get / update a video |
+| GET/POST | `/api/v1/avatars` | List / create avatars |
+| POST | `/api/v1/avatars/sync` | Sync avatars from HeyGen |
+| GET/POST | `/api/v1/voices` | List / create voices |
+| POST | `/api/v1/voices/sync` | Sync voices from ElevenLabs |
+| GET/POST | `/api/v1/clients` | List / create clients |
+| GET/POST | `/api/v1/templates` | List / create templates |
+| POST | `/api/v1/webhooks` | HeyGen webhook callback |
+
+## Local Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env   # fill in required vars
+npm install
+npx prisma migrate dev
+npm run dev            # web on :9102
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the worker separately:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx tsx --tsconfig tsconfig.worker.json worker/index.ts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Required Environment Variables
 
-## Learn More
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `REDIS_URL` | Redis connection string |
+| `HEYGEN_API_KEY` | HeyGen API key |
+| `ELEVENLABS_API_KEY` | ElevenLabs API key |
+| `ADMIN_API_KEY` | Secret for API auth |
+| `NEXT_PUBLIC_ADMIN_KEY` | Same value, exposed to browser for sync buttons |
+| `SESSION_SECRET` | HS256 secret for JWT session tokens (min 32 chars) |
+| `MAGIC_LINK_SECRET` | HS256 secret for magic-link JWTs (min 32 chars) |
+| `E4A_API_KEY` | emails4agents API key |
+| `NEXT_PUBLIC_APP_URL` | Public URL (e.g. `https://app.vidgenatar.com`) |
 
-To learn more about Next.js, take a look at the following resources:
+## Docker / Coolify
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Dockerfile uses a three-stage build (`deps` → `builder` → `runner`). The runner stage uses `pm2-runtime` to manage two processes:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `vidgenatar-web` — Next.js standalone server
+- `vidgenatar-worker` — BullMQ worker via tsx
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Coolify writes env vars to `/app/.env`. The pm2 config loads this file at startup via dotenv.
