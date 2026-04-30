@@ -2,6 +2,7 @@ export type HeyGenAvatar = {
   avatar_id: string
   avatar_name: string
   preview_image_url: string | null
+  avatarType: 'stock' | 'custom'
 }
 
 export type VideoStatus = 'pending' | 'processing' | 'completed' | 'failed'
@@ -18,10 +19,38 @@ function headers(contentType = 'application/json') {
 }
 
 export async function listAvatars(): Promise<HeyGenAvatar[]> {
-  const res = await fetch(`${BASE}/v2/avatars`, { headers: headers() })
-  if (!res.ok) throw new Error(`HeyGen list avatars error ${res.status}`)
-  const data = await res.json()
-  return (data.data?.avatars ?? []) as HeyGenAvatar[]
+  const [stockRes, customRes] = await Promise.all([
+    fetch(`${BASE}/v2/avatars`, { headers: headers() }),
+    fetch(`${BASE}/v2/avatars?is_public=false`, { headers: headers() }),
+  ])
+
+  if (!stockRes.ok) throw new Error(`HeyGen list avatars error ${stockRes.status}`)
+
+  const stockData = await stockRes.json()
+  const stockAvatars: HeyGenAvatar[] = (stockData.data?.avatars ?? []).map((a: Record<string, unknown>) => ({
+    avatar_id: a.avatar_id as string,
+    avatar_name: a.avatar_name as string,
+    preview_image_url: (a.preview_image_url ?? null) as string | null,
+    avatarType: 'stock' as const,
+  }))
+
+  let customAvatars: HeyGenAvatar[] = []
+  if (customRes.ok) {
+    const customData = await customRes.json()
+    const rawCustom: Record<string, unknown>[] = customData.data?.avatars ?? []
+    // Deduplicate — only include avatars not already in the stock list
+    const stockIds = new Set(stockAvatars.map((a) => a.avatar_id))
+    customAvatars = rawCustom
+      .filter((a) => !stockIds.has(a.avatar_id as string))
+      .map((a) => ({
+        avatar_id: a.avatar_id as string,
+        avatar_name: a.avatar_name as string,
+        preview_image_url: (a.preview_image_url ?? null) as string | null,
+        avatarType: 'custom' as const,
+      }))
+  }
+
+  return [...stockAvatars, ...customAvatars]
 }
 
 export async function uploadAudio(audioBuffer: ArrayBuffer): Promise<string> {

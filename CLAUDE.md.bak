@@ -1,0 +1,71 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Automated course video pipeline that turns lesson scripts into avatar-narrated videos using ElevenLabs (TTS) and HeyGen (avatar video). The working code lives in `heygen-studio-template/`.
+
+## Setup
+
+```bash
+cd heygen-studio-template
+pip install -r requirements.txt
+cp .env.example .env   # then add real API keys
+```
+
+Edit `config.json` to set your HeyGen avatar ID and ElevenLabs voice ID before running anything.
+
+## Commands
+
+All commands run from inside `heygen-studio-template/`:
+
+```bash
+python generate_videos.py --dry-run        # Export/split scripts only — no API calls, no credits
+python generate_videos.py --lesson 1.0 --max-parts 1  # Test one chunk of one lesson
+python generate_videos.py --lesson 1.0     # Full lesson
+python generate_videos.py --module 1       # All lessons in module 1
+python generate_videos.py                  # All lessons
+python generate_videos.py --status         # Show progress summary
+
+# Motion upgrade (only when HeyGen releases new engine)
+python heygen_update.py generate           # Build upgrade queue from state.json
+python heygen_update.py update             # Upgrade pending videos
+python redownload_videos.py                # Download re-rendered versions
+```
+
+## Architecture
+
+`generate_videos.py` is the entire pipeline — one file, no framework. For each lesson chunk it runs six sequential stages:
+
+1. **Load Script** — local `.txt` or Google Doc via `gws` CLI
+2. **Split** — sentence-boundary chunks (configured by `pipeline.max_chunk_words`)
+3. **Generate Audio** — ElevenLabs TTS → MP3 saved to `output/audio/`
+4. **Upload** — POST MP3 to HeyGen asset API
+5. **Create Video** — POST to HeyGen video API with avatar + audio asset
+6. **Poll & Download** — polls every 30s until complete, saves MP4 to `output/videos/`
+
+**State:** `state.json` (auto-created) records every completed step per chunk. Re-running skips already-completed steps — the pipeline is fully resumable.
+
+**Concurrency:** Batches of 3 videos run in parallel (controlled by `pipeline.concurrent_limit`). Audio generation and upload happen in parallel within each batch via `ThreadPoolExecutor`.
+
+## Configuration Reference
+
+| What | Where |
+|------|-------|
+| API keys | `.env` (copied from `.env.example`) |
+| Avatar ID | `config.json → avatar.id` |
+| Voice ID | `config.json → voice.id` |
+| Voice style/speed | `config.json → voice.settings` |
+| Words per chunk | `config.json → pipeline.max_chunk_words` (default 200) |
+| Parallel video limit | `config.json → pipeline.concurrent_limit` (default 3) |
+| Lesson list | `config.json → lessons` |
+
+Lessons support two source types: `"source": "local"` (`.txt` file path) or `"source": "google_doc"` (Google Doc ID, requires `gws` CLI).
+
+## Common Issues
+
+- **Placeholder errors on startup** — config.json still has `YOUR_*` values; replace them before running
+- **Audio duration warning** — chunk over 65s; lower `max_chunk_words`
+- **HeyGen video failed** — check credits, avatar ID validity, audio length
+- **`gws` not found** — only needed for Google Docs source; ignore if using local `.txt` files

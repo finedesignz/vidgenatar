@@ -1,0 +1,11 @@
+Welcome to this course. In this lesson, we're going to walk through the foundation of everything you'll learn in the modules ahead.
+
+The goal here is simple: by the end of this lesson, you should have a clear mental model of how this process works from start to finish. We're not diving into the deep details yet. That comes later. Right now, we're building the map.
+
+Here's the big picture. Every successful project follows three phases. First, you define the problem clearly. Most people skip this step, and that's exactly why their projects stall out. Second, you build a solution that's scoped tightly enough to actually ship. And third, you deliver it in a way that builds trust and opens the door to the next opportunity.
+
+Think of these three phases as a cycle, not a straight line. The best practitioners loop through this cycle over and over, getting better and faster each time.
+
+In the next lesson, we'll break down phase one in detail. You'll learn exactly how to run a discovery process that uncovers real opportunities, not just surface-level requests. For now, take a moment to review the course outline and familiarize yourself with the structure. Everything builds on what comes before it, so going in order matters.
+
+Let's get started.

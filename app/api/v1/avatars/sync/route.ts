@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   for (const a of heygenAvatars) {
     await db.avatar.upsert({
       where: { heygenAvatarId: a.avatar_id },
-      create: { heygenAvatarId: a.avatar_id, name: a.avatar_name, thumbnailUrl: a.preview_image_url },
-      update: { name: a.avatar_name, thumbnailUrl: a.preview_image_url },
+      create: { heygenAvatarId: a.avatar_id, name: a.avatar_name, thumbnailUrl: a.preview_image_url, avatarType: a.avatarType },
+      update: { name: a.avatar_name, thumbnailUrl: a.preview_image_url, avatarType: a.avatarType },
     })
     upserted++
   }

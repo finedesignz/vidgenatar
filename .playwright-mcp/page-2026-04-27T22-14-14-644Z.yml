@@ -1,0 +1,32 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - heading "Vidgenatar" [level=1] [ref=e5]
+        - paragraph [ref=e6]: Video Generator
+      - link "Jobs" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "Templates" [ref=e8] [cursor=pointer]:
+        - /url: /templates
+      - link "Avatars" [ref=e9] [cursor=pointer]:
+        - /url: /avatars
+      - link "Voices" [active] [ref=e10] [cursor=pointer]:
+        - /url: /voices
+      - link "Clients" [ref=e11] [cursor=pointer]:
+        - /url: /clients
+    - main [ref=e12]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - heading "Voices" [level=1] [ref=e43]
+          - link "Sync from ElevenLabs" [ref=e44] [cursor=pointer]:
+            - /url: /api/v1/voices/sync
+        - table [ref=e46]:
+          - rowgroup [ref=e47]:
+            - row "Name ElevenLabs ID Speed" [ref=e48]:
+              - columnheader "Name" [ref=e49]
+              - columnheader "ElevenLabs ID" [ref=e50]
+              - columnheader "Speed" [ref=e51]
+          - rowgroup [ref=e52]:
+            - row "No voices yet." [ref=e53]:
+              - cell "No voices yet." [ref=e54]
+  - alert [ref=e31]

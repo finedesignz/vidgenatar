@@ -34,6 +34,7 @@ model Avatar {
   heygenAvatarId String     @unique
   name           String
   style          String?
+  avatarType     String     @default("stock")
   thumbnailUrl   String?
   createdAt      DateTime   @default(now())
   jobs           VideoJob[]
