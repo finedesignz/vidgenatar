@@ -26,7 +26,7 @@
     "@remotion/cli": "^4.0.448",
     "@remotion/player": "^4.0.448",
     "@remotion/renderer": "^4.0.448",
-    "bullmq": "^5.74.1",
+    "bullmq": "^5.77.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
@@ -44,7 +44,7 @@
     "remotion": "^4.0.448",
     "tailwind-merge": "^3.5.0",
     "tsx": "^4.21.0",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
