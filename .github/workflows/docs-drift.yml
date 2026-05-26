@@ -1,0 +1,23 @@
+name: docs-drift
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: finedesignz/_templates/docs-drift-action@main
+        with:
+          mode: fullstack
+          stack: node
+          install_cmd: npm ci
+          build_cmd: npm run build
+          start_cmd: npm run start
+          port: '9109'
+          docs_sync_cmd: npm run docs-sync
+          components_dir: components
+          components_ext: tsx
