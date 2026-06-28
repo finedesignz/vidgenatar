@@ -32,5 +32,5 @@ COPY --from=builder /app/tsconfig.worker.json ./
 COPY --from=builder /app/prisma.config.ts ./
 COPY pm2.config.js ./
 RUN npm install -g tsx pm2
-EXPOSE 9102
+EXPOSE 9109
 CMD ["pm2-runtime", "pm2.config.js"]
