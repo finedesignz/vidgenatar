@@ -1,0 +1,28 @@
+# Docs drift gate (global rule #21) — ported from GHA to self-hosted Woodpecker.
+# The repo's docs-sync deterministically dumps docs/openapi.json in-process
+# (no server boot, no DB). Fail if it drifts from the committed copy.
+#
+# NOTE: the GHA action ran in mode=fullstack, which also enforced component
+# story coverage. That is NOT ported — 19 of 20 components under components/
+# lack a sibling *.stories.tsx on main, so the check is a pre-existing red gate.
+# Only the openapi.json drift check (what docs-sync deterministically owns) is
+# gated here.
+
+when:
+  - event: push
+    branch: [main, master]
+  - event: pull_request
+
+steps:
+  - name: drift-openapi
+    image: node:20-bookworm
+    commands:
+      # --legacy-peer-deps: @storybook/nextjs@8 has a peer conflict with next@16;
+      # the dumper does not touch storybook so peer resolution is irrelevant here.
+      - npm ci --legacy-peer-deps
+      - npm run docs-sync
+      - |
+        if ! git diff --exit-code -- docs/openapi.json; then
+          echo "docs/openapi.json is stale. Run 'npm run docs-sync' and commit." 1>&2
+          exit 1
+        fi
