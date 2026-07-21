@@ -17,7 +17,9 @@ steps:
   - name: drift-openapi
     image: node:20-bookworm
     commands:
-      - npm ci
+      # --legacy-peer-deps: @storybook/nextjs@8 has a peer conflict with next@16;
+      # the dumper does not touch storybook so peer resolution is irrelevant here.
+      - npm ci --legacy-peer-deps
       - npm run docs-sync
       - |
         if ! git diff --exit-code -- docs/openapi.json; then
