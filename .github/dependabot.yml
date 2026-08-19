@@ -1,13 +1,25 @@
-# Dependabot config: grouped updates on a monthly cadence.
+# Dependabot config: grouped updates on a staggered weekly cadence.
 # Goal: collapse the per-dependency PR storm into a few grouped PRs per
-# month. Security updates are grouped too via applies-to: security-updates,
+# week, in this repo's own CI slot. Security updates are grouped too via applies-to: security-updates,
 # since schedule and open-pull-requests-limit do not apply to them.
 version: 2
+# CI-load staggering: every repo in the org gets ONE weekly Dependabot slot so the
+# shared Woodpecker pool is never hit by many repos at once.
+# Slot rule (deterministic, reproducible for new repos):
+#   h    = FNV-1a 32-bit hash of the lowercase repo name (name only, no owner)
+#   slot = h % 140, linear-probed +1 (mod 140) while the slot is already claimed,
+#          repos processed in ascending lowercase-repo-name order
+#   day  = [monday..sunday][slot % 7]
+#   hour = 2 + (floor(slot / 7) % 20)      -> 02:00..21:00 America/Los_Angeles
+# Security updates are unaffected -- Dependabot ignores `schedule` for those.
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "sunday"
+      time: "08:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 3
     groups:
       all-dependencies:
@@ -31,7 +43,10 @@ updates:
   - package-ecosystem: "pip"
     directory: "/heygen-studio-template"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "sunday"
+      time: "08:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 3
     groups:
       all-dependencies:
@@ -55,7 +70,10 @@ updates:
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "sunday"
+      time: "08:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 3
     groups:
       all-dependencies:
